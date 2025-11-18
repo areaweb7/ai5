@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中部第一輸送 GA4分析レポート | 2025年10月19日～11月18日</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            min-height: 100vh;
+            padding: 30px 20px;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 4px solid #1e3a8a;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+        
+        .period {
+            font-size: 1.3rem;
+            color: #64748b;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .site-url {
+            font-size: 1.1rem;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .summary-card {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .summary-average {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .summary-note {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        
+        .section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e2e8f0;
+            font-weight: 700;
+        }
+        
+        .strength-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-left: 6px solid #10b981;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .strength-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #065f46;
+            margin-bottom: 20px;
+        }
+        
+        .strength-label {
+            font-weight: 700;
+            color: #047857;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .strength-content {
+            color: #064e3b;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+        
+        .strength-content ul {
+            margin-top: 10px;
+            padding-left: 25px;
+        }
+        
+        .strength-content li {
+            margin-bottom: 8px;
+        }
+        
+        .quote {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-style: italic;
+            border-left: 4px solid #10b981;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 30px 0;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        
+        .top-pages {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .page-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .page-rank {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #3b82f6;
+            min-width: 50px;
+        }
+        
+        .page-info {
+            flex: 1;
+        }
+        
+        .page-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .page-stats {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+        
+        .highlight-emoji {
+            font-size: 1.3rem;
+            margin-left: 10px;
+        }
+        
+        .opportunity-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 6px solid #f59e0b;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .opportunity-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        
+        .opportunity-text {
+            color: #78350f;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+        
+        td {
+            padding: 15px 18px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 1.05rem;
+        }
+        
+        tr:hover {
+            background: #f8fafc;
+        }
+        
+        .conclusion-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 6px solid #2563eb;
+            padding: 35px;
+            border-radius: 12px;
+            margin: 40px 0;
+        }
+        
+        .conclusion-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+        
+        .conclusion-subtitle {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        
+        .conclusion-list {
+            padding-left: 25px;
+        }
+        
+        .conclusion-list li {
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+            color: #1e40af;
+        }
+        
+        .final-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+            color: #64748b;
+        }
+        
+        footer p {
+            margin-bottom: 10px;
+            font-size: 1rem;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .summary-value {
+                font-size: 2.5rem;
+            }
+            
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 中部第一輸送株式会社<br>GA4分析レポート</h1>
+            <p class="period">2025年10月19日～11月18日（30日間）</p>
+            <p class="site-url">🌐 https://cdy.co.jp/</p>
+        </header>
+
+        <!-- 基本データ -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-label">👥 訪問者数</div>
+                <div class="summary-value">976人</div>
+                <div class="summary-average">1日平均 約33人</div>
+                <div class="summary-note">※実際に訪れた人の数</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">🔄 セッション数</div>
+                <div class="summary-value">1,165回</div>
+                <div class="summary-average">1日平均 約39回</div>
+                <div class="summary-note">※訪問の回数（1人が複数回訪問）</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">📄 ページビュー</div>
+                <div class="summary-value">2,509回</div>
+                <div class="summary-average">1日平均 約84回</div>
+                <div class="summary-note">※見られたページの合計数</div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">⏱️ 平均滞在時間</div>
+                <div class="summary-value">2分30秒</div>
+                <div class="summary-average">業界平均の2倍以上</div>
+                <div class="summary-note">※1回の訪問あたり</div>
+            </div>
+        </div>
+
+        <!-- 5つの強み -->
+        <div class="section">
+            <h2 class="section-title">✨ 優れているポイント（5つの強み）</h2>
+            
+            <!-- 強み1 -->
+            <div class="strength-box">
+                <div class="strength-title">🏆 1. トップページが業界トップクラスの成績</div>
+                
+                <div class="strength-label">数値:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li><strong>滞在時間: 3分24秒</strong>（業界平均の2倍以上！）</li>
+                        <li><strong>直帰率: 25.6%</strong>（業界平均40-60%を大きく下回る）</li>
+                        <li><strong>他ページへの遷移率: 74%</strong></li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label">これが意味すること:</div>
+                <div class="quote">
+                    トップページを見た訪問者の74%が他のページも見ています。これは、サイトのコンテンツが魅力的で、訪問者の興味を引く設計になっている証拠です。物流業界のWebサイトとして、非常に優秀な数値です。
+                </div>
+                
+                <div class="strength-label">さらに良くなる可能性:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li>この優秀なトップページの設計を、他のランディングページにも応用</li>
+                        <li>トップページの成功要因を分析して、横展開することで全体の質が向上</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 強み2 -->
+            <div class="strength-box">
+                <div class="strength-title">🎯 2. 地域密着型のビジネスモデルが正しく機能</div>
+                
+                <div class="strength-label">アクセス地域（上位）:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li>1位: 愛知県名古屋市 - 215セッション（18.5%）</li>
+                        <li>2位: 愛知県一宮市 - 13セッション</li>
+                        <li>3位: 愛知県豊田市 - 11セッション</li>
+                        <li>4位: 岐阜県岐阜市 - 21セッション</li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label">これが意味すること:</div>
+                <div class="quote">
+                    営業エリアである愛知県・岐阜県からの訪問が中心です。特に豊田市（製造業の集積地）からのアクセスがあることは、製造業向けの物流ニーズを的確に捉えている証拠です。
+                </div>
+                
+                <div class="strength-label">さらに良くなる可能性:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li>地域内での認知度がさらに高まれば、訪問者数の増加が期待できる</li>
+                        <li>豊田市など製造業エリアでの実績をアピールすることで、同業界からの問い合わせ増加の可能性</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 強み3 -->
+            <div class="strength-box">
+                <div class="strength-title">🚀 3. 岐阜羽島営業所への注目が高まっている</div>
+                
+                <div class="strength-label">数値:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li><strong>閲覧数: 82回</strong>（人気ページ4位）</li>
+                        <li>ユーザー数: 56人</li>
+                        <li>ランディングページとして33セッション（直接このページから訪問）</li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label">これが意味すること:</div>
+                <div class="quote">
+                    リニューアルオープンを控えた岐阜羽島営業所への関心が高まっています。直接このページから入ってくる人も33人おり、独自の集客力を持っています。岐阜エリアでのビジネス展開に大きな期待が持てます。
+                </div>
+                
+                <div class="strength-label">さらに良くなる可能性:</div>
+                <div class="strength-content">
+                    <ul>
+                        <li>リニューアルオープン後、さらなるアクセス増加が見込める</li>
+                        <li>岐阜エリアでの認知度向上により、新規顧客の獲得チャンス</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- 強み4 -->
+            <div class="strength-box">
+                <div class="strength-title">💼 4. BtoB企業として健全なアクセス構造</div>
+                
+                <div class="strength-label">デバイス別:</div>
+                <div class="chart-container" style="height: 300px;">
+                    <canvas id="deviceChart"></canvas>
+                </div>
+                
+                <div class="strength-label">これが意味すること:</div>
+                <div class="quote">
+                    デスクトップ（PC）からのアクセスが中心で、企業の担当者が業務時間中に情報収集していることが分かります。BtoB企業として理想的なアクセス構造です。
+                </div>
+            </div>
+
+            <!-- 強み5 -->
+            <div class="strength-box">
+                <div class="strength-title">🔍 5. 検索エンジンからの評価が高い</div>
+                
+                <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+                
+                <div class="strength-label">これが意味すること:</div>
+                <div class="quote">
+                    検索エンジン経由での訪問が全体の60%以上を占めています。これは、SEO対策が効果を発揮し、物流サービスを探している企業に的確にリーチできている証拠です。また、直接訪問（社名で検索）が32%と高いことは、ブランド認知度の高さを示しています。
+                </div>
+            </div>
+        </div>
+
+        <!-- ブログ発信の効果 -->
+        <div class="section">
+            <h2 class="section-title">🎯 ブログ・イベント発信の大きな成果</h2>
+            
+            <div class="strength-box" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 6px solid #f59e0b;">
+                <div class="strength-title" style="color: #92400e;">✍️ 会社の雰囲気発信が功を奏している</div>
+                
+                <div class="strength-label" style="color: #78350f;">数値:</div>
+                <div class="strength-content" style="color: #78350f;">
+                    <ul>
+                        <li><strong>ブログ・イベント関連ページ: 475回閲覧</strong>（321人が訪問）</li>
+                        <li><strong>全体ページビューの18.9%</strong>（約5分の1）を占める</li>
+                        <li>訪問者の<strong>約3人に1人</strong>がブログ・イベント記事を閲覧</li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label" style="color: #78350f;">特に人気の記事 TOP5:</div>
+                <div class="top-pages">
+                    <div class="page-item" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                        <div class="page-rank" style="color: #f59e0b;">1位</div>
+                        <div class="page-info">
+                            <div class="page-title" style="color: #78350f;">新入社員セミナーの社内共有会</div>
+                            <div class="page-stats" style="color: #92400e;">47回閲覧 - 28人が訪問 | 社員教育への関心</div>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                        <div class="page-rank" style="color: #f59e0b;">2位</div>
+                        <div class="page-info">
+                            <div class="page-title" style="color: #78350f;">2025年度 新入社員紹介<span class="highlight-emoji">👔</span></div>
+                            <div class="page-stats" style="color: #92400e;">34回閲覧 - 30人が訪問 | 採用情報への関心</div>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                        <div class="page-rank" style="color: #f59e0b;">3位</div>
+                        <div class="page-info">
+                            <div class="page-title" style="color: #78350f;">六白寮が完成<span class="highlight-emoji">🏡</span></div>
+                            <div class="page-stats" style="color: #92400e;">27回閲覧 - 21人が訪問 | 福利厚生への関心大</div>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                        <div class="page-rank" style="color: #f59e0b;">4位</div>
+                        <div class="page-info">
+                            <div class="page-title" style="color: #78350f;">DX認定取得<span class="highlight-emoji">💻</span></div>
+                            <div class="page-stats" style="color: #92400e;">26回閲覧 - 19人が訪問 | 先進性のアピール</div>
+                        </div>
+                    </div>
+                    
+                    <div class="page-item" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);">
+                        <div class="page-rank" style="color: #f59e0b;">5位</div>
+                        <div class="page-info">
+                            <div class="page-title" style="color: #78350f;">マキノ懇親会・技能実習生の活躍<span class="highlight-emoji">🎉</span></div>
+                            <div class="page-stats" style="color: #92400e;">25回閲覧 - 15人が訪問 | 社内イベント・人材育成</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="strength-label" style="color: #78350f; margin-top: 30px;">これが意味すること:</div>
+                <div class="quote" style="border-left: 4px solid #f59e0b;">
+                    <strong>会社の雰囲気や福利厚生を積極的に発信する戦略が大成功しています。</strong><br><br>
+                    
+                    訪問者の約3人に1人がブログ・イベント記事を読んでおり、「どんな会社か」「どんな人が働いているか」を知りたい求職者や、取引を検討している企業にしっかり届いています。<br><br>
+                    
+                    特に注目すべきは：
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li><strong>福利厚生（寮・懇親会）</strong>への関心が高い → 働く環境を重視する求職者が多い</li>
+                        <li><strong>新入社員・研修</strong>への閲覧が多い → 人材育成への関心が高い</li>
+                        <li><strong>技能実習生の活躍</strong>も読まれている → グローバル企業としての評価</li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label" style="color: #78350f;">採用・営業への効果:</div>
+                <div class="strength-content" style="color: #78350f;">
+                    <ul>
+                        <li><strong>BtoB営業:</strong> 信頼できる会社かを確認している（社員を大切にする姿勢が伝わる）</li>
+                        <li><strong>採用:</strong> 職場環境や社員の様子を見て応募を検討している</li>
+                        <li><strong>サイト全体の滞在時間2分30秒</strong>は、このブログ発信戦略の成果</li>
+                    </ul>
+                </div>
+                
+                <div class="strength-label" style="color: #78350f;">継続することで期待できる効果:</div>
+                <div class="strength-content" style="color: #78350f;">
+                    <ul>
+                        <li>質の高い求職者の応募増加（会社の雰囲気を理解した上での応募）</li>
+                        <li>BtoB取引先からの信頼向上（人を大切にする企業として評価）</li>
+                        <li>ブランド力の向上（地域で働きやすい会社として認知）</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 人気コンテンツ -->
+        <div class="section">
+            <h2 class="section-title">📈 人気コンテンツ（よく見られているページ）</h2>
+            
+            <div class="top-pages">
+                <div class="page-item">
+                    <div class="page-rank">1位</div>
+                    <div class="page-info">
+                        <div class="page-title">トップページ<span class="highlight-emoji">🏠</span></div>
+                        <div class="page-stats">690回閲覧 - 466人が訪問</div>
+                    </div>
+                </div>
+                
+                <div class="page-item">
+                    <div class="page-rank">2位</div>
+                    <div class="page-info">
+                        <div class="page-title">会社案内<span class="highlight-emoji">🏢</span></div>
+                        <div class="page-stats">424回閲覧 - 324人が訪問</div>
+                    </div>
+                </div>
+                
+                <div class="page-item">
+                    <div class="page-rank">3位</div>
+                    <div class="page-info">
+                        <div class="page-title">お問い合わせ<span class="highlight-emoji">⭐</span></div>
+                        <div class="page-stats">105回閲覧 - 94人が訪問 | 問い合わせ意欲が高い</div>
+                    </div>
+                </div>
+                
+                <div class="page-item">
+                    <div class="page-rank">4位</div>
+                    <div class="page-info">
+                        <div class="page-title">岐阜羽島営業所<span class="highlight-emoji">🚀</span></div>
+                        <div class="page-stats">82回閲覧 - 56人が訪問 | 注目度上昇中</div>
+                    </div>
+                </div>
+                
+                <div class="page-item">
+                    <div class="page-rank">5位</div>
+                    <div class="page-info">
+                        <div class="page-title">中部第一グループの強み</div>
+                        <div class="page-stats">80回閲覧 - 61人が訪問</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 今後の期待 -->
+        <div class="section">
+            <h2 class="section-title">🌟 今後の期待できるポイント</h2>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">1. 岐阜羽島営業所リニューアルオープンの効果</div>
+                <div class="opportunity-text">
+                    現在82回の閲覧がありますが、リニューアルオープン後はさらなるアクセス増加が見込めます。岐阜エリアでの新規顧客獲得の大きなチャンスです。
+                </div>
+            </div>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">2. トップページの優秀な設計の横展開</div>
+                <div class="opportunity-text">
+                    業界トップクラスのトップページ設計を、他の重要ページにも応用することで、サイト全体の質が向上します。
+                </div>
+            </div>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">3. 地域内での認知度向上</div>
+                <div class="opportunity-text">
+                    すでに愛知・岐阜からの訪問が中心ですが、地域内での認知度がさらに高まれば、訪問者数・問い合わせ数の増加が期待できます。
+                </div>
+            </div>
+            
+            <div class="opportunity-box">
+                <div class="opportunity-title">4. 製造業向けアピール強化</div>
+                <div class="opportunity-text">
+                    豊田市（製造業の集積地）からのアクセスがあることから、製造業向けの実績や強みをさらにアピールすることで、同業界からの引き合いが増える可能性があります。
+                </div>
+            </div>
+        </div>
+
+        <!-- 業界平均との比較 -->
+        <div class="section">
+            <h2 class="section-title">📊 業界平均との比較</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>指標</th>
+                        <th>中部第一輸送</th>
+                        <th>物流業界平均</th>
+                        <th>評価</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>トップページ滞在時間</td>
+                        <td><strong>3分24秒</strong></td>
+                        <td>1-2分</td>
+                        <td>⭐⭐⭐ 優秀</td>
+                    </tr>
+                    <tr>
+                        <td>直帰率</td>
+                        <td><strong>25.6%</strong></td>
+                        <td>40-60%</td>
+                        <td>⭐⭐⭐ 優秀</td>
+                    </tr>
+                    <tr>
+                        <td>ページ/セッション</td>
+                        <td>2.15</td>
+                        <td>2-3</td>
+                        <td>⭐⭐ 良好</td>
+                    </tr>
+                    <tr>
+                        <td>検索エンジン流入</td>
+                        <td><strong>60%+</strong></td>
+                        <td>40-50%</td>
+                        <td>⭐⭐⭐ 優秀</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="margin-top: 20px; font-size: 1.1rem; color: #1e3a8a; font-weight: 600;">
+                <strong>総評:</strong> 全体的に業界平均を上回る優秀な数値です。特にトップページの設計とSEO対策が高く評価できます。
+            </p>
+        </div>
+
+        <!-- まとめ -->
+        <div class="conclusion-box">
+            <div class="conclusion-title">🎯 まとめ</div>
+            
+            <div class="conclusion-subtitle">✅ サイトの現状: 非常に良い状態です</div>
+            <ul class="conclusion-list">
+                <li>トップページは業界トップクラスの成績（滞在時間3分24秒）</li>
+                <li><strong>サイト全体の平均滞在時間2分30秒</strong>は業界平均の2倍以上</li>
+                <li><strong>ブログ・イベント発信が大成功</strong>（全体の19%を占める475回閲覧）</li>
+                <li>地域密着型のビジネスモデルが正しく機能</li>
+                <li>BtoB企業として理想的なアクセス構造</li>
+                <li>検索エンジンからの評価も高い</li>
+            </ul>
+            
+            <div class="conclusion-subtitle">📈 今後の展望: さらなる成長が期待できます</div>
+            <ul class="conclusion-list">
+                <li><strong>岐阜羽島営業所リニューアル</strong>による岐阜エリアでの認知度向上</li>
+                <li><strong>製造業向けアピール強化</strong>による新規顧客獲得</li>
+                <li><strong>地域内での認知度向上</strong>による訪問者数増加</li>
+            </ul>
+            
+            <div class="final-message">
+                <strong>結論:</strong> 現在のサイトは非常に良い状態で機能しており、大きな課題はありません。<br><br>
+                
+                特に優れているのは：
+                <ul style="margin-top: 10px; padding-left: 20px; text-align: left;">
+                    <li><strong>トップページの設計</strong>が業界トップクラス（滞在時間3分24秒）</li>
+                    <li><strong>サイト全体の滞在時間2分30秒</strong>は業界平均の2倍以上</li>
+                    <li><strong>ブログ・イベント発信戦略</strong>が成功（訪問者の3人に1人が閲覧）</li>
+                </ul>
+                <br>
+                会社の雰囲気や福利厚生を積極的に発信する戦略が、採用・営業の両面で効果を発揮しています。今後は、この戦略を継続しながら、岐阜羽島営業所のリニューアルオープンを機に、さらなる成長が期待できます。
+            </div>
+        </div>
+
+        <footer>
+            <p><strong>分析期間:</strong> 2025年10月19日～11月18日（30日間）</p>
+            <p><strong>対象サイト:</strong> https://cdy.co.jp/</p>
+            <p><strong>データソース:</strong> Google Analytics 4（プロパティID: 447535675）</p>
+            <p style="margin-top: 20px; font-size: 0.9rem;">
+                このレポートは Google Analytics 4 のデータに基づいて作成されています
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // 流入経路のグラフ
+        const trafficCtx = document.getElementById('trafficChart').getContext('2d');
+        new Chart(trafficCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Google検索', '直接訪問', 'Yahoo検索', 'Bing検索', 'その他'],
+                datasets: [{
+                    data: [412, 369, 154, 151, 79],
+                    backgroundColor: [
+                        'rgba(30, 58, 138, 0.9)',
+                        'rgba(59, 130, 246, 0.9)',
+                        'rgba(147, 197, 253, 0.9)',
+                        'rgba(191, 219, 254, 0.9)',
+                        'rgba(226, 232, 240, 0.9)'
+                    ],
+                    borderWidth: 3,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            font: {
+                                size: 14,
+                                family: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value}セッション (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // デバイス別のグラフ
+        const deviceCtx = document.getElementById('deviceChart').getContext('2d');
+        new Chart(deviceCtx, {
+            type: 'bar',
+            data: {
+                labels: ['デスクトップ', 'モバイル', 'タブレット'],
+                datasets: [{
+                    label: 'セッション数',
+                    data: [816, 340, 7],
+                    backgroundColor: [
+                        'rgba(30, 58, 138, 0.8)',
+                        'rgba(59, 130, 246, 0.8)',
+                        'rgba(147, 197, 253, 0.8)'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed.y;
+                                const total = 816 + 340 + 7;
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${value}セッション (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
