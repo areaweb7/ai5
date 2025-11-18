@@ -64,17 +64,33 @@
         }
         
         .summary-card {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
             border-radius: 15px;
             padding: 30px;
             color: white;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(30, 58, 138, 0.3);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         
         .summary-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .summary-card.blue {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .summary-card.cyan {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .summary-card.green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        .summary-card.orange {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
         }
         
         .summary-label {
@@ -368,25 +384,25 @@
 
         <!-- 基本データ -->
         <div class="summary-grid">
-            <div class="summary-card">
+            <div class="summary-card blue">
                 <div class="summary-label">👥 訪問者数</div>
                 <div class="summary-value">976人</div>
                 <div class="summary-average">1日平均 約33人</div>
                 <div class="summary-note">※実際に訪れた人の数</div>
             </div>
-            <div class="summary-card">
+            <div class="summary-card cyan">
                 <div class="summary-label">🔄 セッション数</div>
                 <div class="summary-value">1,165回</div>
                 <div class="summary-average">1日平均 約39回</div>
                 <div class="summary-note">※訪問の回数（1人が複数回訪問）</div>
             </div>
-            <div class="summary-card">
+            <div class="summary-card green">
                 <div class="summary-label">📄 ページビュー</div>
                 <div class="summary-value">2,509回</div>
                 <div class="summary-average">1日平均 約84回</div>
                 <div class="summary-note">※見られたページの合計数</div>
             </div>
-            <div class="summary-card">
+            <div class="summary-card orange">
                 <div class="summary-label">⏱️ 平均滞在時間</div>
                 <div class="summary-value">2分30秒</div>
                 <div class="summary-average">業界平均の2倍以上</div>
